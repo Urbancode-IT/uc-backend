@@ -1,4 +1,4 @@
- import express from "express";
+import express from "express";
 import cors from "cors";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
@@ -26,13 +26,21 @@ app.post("/api/send-email/internship", async (req, res) => {
   }
 
   try {
-    // Configure transporter
+    // Configure transporter with improved settings
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // Use TLS
       auth: {
         user: process.env.MAIL_USER, // your Gmail address
         pass: process.env.MAIL_PASS, // app password (not normal password)
       },
+      connectionTimeout: 30000, // 30 seconds
+      greetingTimeout: 30000,
+      socketTimeout: 30000,
+      tls: {
+        rejectUnauthorized: false
+      }
     });
 
     // Email content
@@ -69,13 +77,21 @@ app.post("/api/send-email/contact", async (req, res) => {
   }
 
   try {
-    // Configure transporter
+    // Configure transporter with improved settings
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // Use TLS
       auth: {
         user: process.env.MAIL_USER, // your Gmail address
         pass: process.env.MAIL_PASS, // app password (not normal password)
       },
+      connectionTimeout: 30000, // 30 seconds
+      greetingTimeout: 30000,
+      socketTimeout: 30000,
+      tls: {
+        rejectUnauthorized: false
+      }
     });
 
     // Email content
@@ -110,13 +126,21 @@ app.post("/api/send-email/course-enquiry", async (req, res) => {
   }
 
   try {
-    // Configure transporter
+    // Configure transporter with improved settings
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // Use TLS
       auth: {
         user: process.env.MAIL_USER, // your Gmail address
         pass: process.env.MAIL_PASS, // app password (not normal password)
       },
+      connectionTimeout: 30000, // 30 seconds
+      greetingTimeout: 30000,
+      socketTimeout: 30000,
+      tls: {
+        rejectUnauthorized: false
+      }
     });
 
     // Email content
@@ -133,7 +157,6 @@ app.post("/api/send-email/course-enquiry", async (req, res) => {
         <p><b>Message:</b> ${message}</p>
         <p><b>Pin Code:</b> ${pin}</p>
         <p><b>Mode:</b> ${mode}</p>
-
       `,
     };
 
@@ -147,6 +170,5 @@ app.post("/api/send-email/course-enquiry", async (req, res) => {
 });
 
 // Start server
-
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
