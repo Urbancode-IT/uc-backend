@@ -28,9 +28,7 @@ app.post("/api/send-email/internship", async (req, res) => {
   try {
     // Configure transporter
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+      service: "gmail",
       auth: {
         user: process.env.MAIL_USER, // your Gmail address
         pass: process.env.MAIL_PASS, // app password (not normal password)
@@ -73,9 +71,7 @@ app.post("/api/send-email/contact", async (req, res) => {
   try {
     // Configure transporter
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+      service: "gmail",
       auth: {
         user: process.env.MAIL_USER, // your Gmail address
         pass: process.env.MAIL_PASS, // app password (not normal password)
@@ -116,9 +112,7 @@ app.post("/api/send-email/course-enquiry", async (req, res) => {
   try {
     // Configure transporter
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+      service: "gmail",
       auth: {
         user: process.env.MAIL_USER, // your Gmail address
         pass: process.env.MAIL_PASS, // app password (not normal password)
