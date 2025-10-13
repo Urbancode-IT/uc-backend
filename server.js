@@ -1,4 +1,4 @@
-import express from "express";
+ import express from "express";
 import cors from "cors";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
@@ -7,6 +7,16 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // or your preferred SMTP service
+  auth: {
+    user: process.env.NOTIFY_EMAIL,
+    pass: process.env.NOTIFY_PASSWORD,
+  },
+});
+
+module.exports = transporter;
 
 // === POST route to send email ===
 app.post("/api/send-email/internship", async (req, res) => {
@@ -26,22 +36,8 @@ app.post("/api/send-email/internship", async (req, res) => {
   }
 
   try {
-    // Configure transporter with improved settings
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false, // Use TLS
-      auth: {
-        user: process.env.MAIL_USER, // your Gmail address
-        pass: process.env.MAIL_PASS, // app password (not normal password)
-      },
-      connectionTimeout: 30000, // 30 seconds
-      greetingTimeout: 30000,
-      socketTimeout: 30000,
-      tls: {
-        rejectUnauthorized: false
-      }
-    });
+    // Configure transporter
+   
 
     // Email content
     const mailOptions = {
@@ -60,7 +56,7 @@ app.post("/api/send-email/internship", async (req, res) => {
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    transporter.sendMail(mailOptions);
 
     res.status(200).json({ message: "Email sent successfully!" });
   } catch (err) {
@@ -77,22 +73,7 @@ app.post("/api/send-email/contact", async (req, res) => {
   }
 
   try {
-    // Configure transporter with improved settings
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false, // Use TLS
-      auth: {
-        user: process.env.MAIL_USER, // your Gmail address
-        pass: process.env.MAIL_PASS, // app password (not normal password)
-      },
-      connectionTimeout: 30000, // 30 seconds
-      greetingTimeout: 30000,
-      socketTimeout: 30000,
-      tls: {
-        rejectUnauthorized: false
-      }
-    });
+   
 
     // Email content
     const mailOptions = {
@@ -109,7 +90,7 @@ app.post("/api/send-email/contact", async (req, res) => {
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+   transporter.sendMail(mailOptions);
 
     res.status(200).json({ message: "Email sent successfully!" });
   } catch (err) {
@@ -126,22 +107,7 @@ app.post("/api/send-email/course-enquiry", async (req, res) => {
   }
 
   try {
-    // Configure transporter with improved settings
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false, // Use TLS
-      auth: {
-        user: process.env.MAIL_USER, // your Gmail address
-        pass: process.env.MAIL_PASS, // app password (not normal password)
-      },
-      connectionTimeout: 30000, // 30 seconds
-      greetingTimeout: 30000,
-      socketTimeout: 30000,
-      tls: {
-        rejectUnauthorized: false
-      }
-    });
+    
 
     // Email content
     const mailOptions = {
@@ -157,10 +123,11 @@ app.post("/api/send-email/course-enquiry", async (req, res) => {
         <p><b>Message:</b> ${message}</p>
         <p><b>Pin Code:</b> ${pin}</p>
         <p><b>Mode:</b> ${mode}</p>
+
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    transporter.sendMail(mailOptions);
 
     res.status(200).json({ message: "Email sent successfully!" });
   } catch (err) {
@@ -170,5 +137,6 @@ app.post("/api/send-email/course-enquiry", async (req, res) => {
 });
 
 // Start server
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
