@@ -9,12 +9,12 @@ app.use(cors('*'));
 app.use(express.json());
 
 const transporter = nodemailer.createTransport({
-  service: 'smtp.gmail.com', // or your preferred SMTP service
+  host: 'smtp.gmail.com', // or your preferred SMTP service
   port: 587,
   secure: false,
   auth: {
-    user: process.env.NOTIFY_EMAIL,
-    pass: process.env.NOTIFY_PASSWORD,
+    user: process.env.MAIL_TO,
+    pass: process.env.MAIL_PASS,
   },
   tls: {
     rejectUnauthorized: false,
@@ -59,7 +59,7 @@ app.post("/api/send-email/internship", async (req, res) => {
       `,
     };
 
-    transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
 
     res.status(200).json({ message: "Email sent successfully!" });
   } catch (err) {
@@ -67,7 +67,6 @@ app.post("/api/send-email/internship", async (req, res) => {
     res.status(500).json({ error: "Failed to send email" });
   }
 });
-
 app.post("/api/send-email/contact", async (req, res) => {
   const { name, email, message, mobile, interest } = req.body;
 
@@ -101,7 +100,6 @@ app.post("/api/send-email/contact", async (req, res) => {
     res.status(500).json({ error: "Failed to send email" });
   }
 });
-
 app.post("/api/send-email/course-enquiry", async (req, res) => {
   const { name, email, phone, pin, course, message,mode } = req.body;
 
