@@ -21,8 +21,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-module.exports = transporter;
-
 // === POST route to send email ===
 app.post("/api/send-email/internship", async (req, res) => {
   const {
