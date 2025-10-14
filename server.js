@@ -5,14 +5,19 @@ import dotenv from "dotenv";
 
 dotenv.config();
 const app = express();
-app.use(cors());
+app.use(cors('*'));
 app.use(express.json());
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // or your preferred SMTP service
+  service: 'smtp.gmail.com', // or your preferred SMTP service
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.NOTIFY_EMAIL,
     pass: process.env.NOTIFY_PASSWORD,
+  },
+  tls: {
+    rejectUnauthorized: false,
   },
 });
 
