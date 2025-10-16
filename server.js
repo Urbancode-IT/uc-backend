@@ -1,40 +1,20 @@
 import express from "express";
 import cors from "cors";
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import { Resend } from "resend";
 
 dotenv.config();
-
 const app = express();
-
-// ✅ Allow only specific origins for better security
+app.use(express.json());
 app.use(cors({
-  origin: ['https://urbancode.tech', 'https://inout.urbancode.tech', 'http://localhost:3000'],
+  origin: ['https://www.urbancode.in', 'http://localhost:3000'],
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
 }));
 
-app.use(express.json());
+// ✅ Initialize Resend
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// ✅ Configure transporter once globally
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.MAIL_USER, // should match the "from" address
-    pass: process.env.MAIL_PASS,
-  }
-});
-
-// ✅ Test transporter
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("SMTP Connection Error:", error);
-  } else {
-    console.log("✅ SMTP Server Ready to Send Emails");
-  }
-});
-
-// === Internship Form ===
+// === Internship form ===
 app.post("/api/send-email/internship", async (req, res) => {
   const { firstName, lastName, email, mobile, program, experience, interest, portfolio } = req.body;
 
@@ -42,32 +22,31 @@ app.post("/api/send-email/internship", async (req, res) => {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
-  const mailOptions = {
-    from: `"UC-Website Lead" <${process.env.MAIL_USER}>`,
-    to: process.env.MAIL_TO,
-    subject: `UC Website Lead: Internship Application - ${program}`,
-    html: `
-      <h2>From UC Website: New Internship Application</h2>
-      <p><b>Name:</b> ${firstName} ${lastName}</p>
-      <p><b>Email:</b> ${email}</p>
-      <p><b>Mobile:</b> ${mobile}</p>
-      <p><b>Program:</b> ${program}</p>
-      <p><b>Experience:</b> ${experience}</p>
-      <p><b>Interest:</b> ${interest}</p>
-      <p><b>Portfolio:</b> ${portfolio || "N/A"}</p>
-    `,
-  };
-
   try {
-    await transporter.sendMail(mailOptions);
+    await resend.emails.send({
+      from: "UC Website <info@urbancode.tech>", // can use your verified domain or temporary @resend.dev
+      to: process.env.MAIL_TO,
+      subject: `UC Website Lead: Internship Application - ${program}`,
+      html: `
+        <h2>From UC Website: New Internship Application</h2>
+        <p><b>Name:</b> ${firstName} ${lastName}</p>
+        <p><b>Email:</b> ${email}</p>
+        <p><b>Mobile:</b> ${mobile}</p>
+        <p><b>Program:</b> ${program}</p>
+        <p><b>Experience:</b> ${experience}</p>
+        <p><b>Interest:</b> ${interest}</p>
+        <p><b>Portfolio:</b> ${portfolio || "N/A"}</p>
+      `,
+    });
+
     res.status(200).json({ message: "Email sent successfully!" });
   } catch (err) {
-    console.error("Email Error:", err);
+    console.error("Email send failed:", err);
     res.status(500).json({ error: "Failed to send email" });
   }
 });
 
-// === Contact Form ===
+// === Contact form ===
 app.post("/api/send-email/contact", async (req, res) => {
   const { name, email, message, mobile, interest } = req.body;
 
@@ -75,30 +54,29 @@ app.post("/api/send-email/contact", async (req, res) => {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
-  const mailOptions = {
-    from: `"UC-Website Contact" <${process.env.MAIL_USER}>`,
-    to: process.env.MAIL_TO,
-    subject: `UC Website Lead: Contact Page Message for ${interest}`,
-    html: `
-      <h2>From UC Website: New Contact Page Message</h2>
-      <p><b>Name:</b> ${name}</p>
-      <p><b>Email:</b> ${email}</p>
-      <p><b>Mobile:</b> ${mobile}</p>
-      <p><b>Interest:</b> ${interest}</p>
-      <p><b>Message:</b> ${message}</p>
-    `,
-  };
-
   try {
-    await transporter.sendMail(mailOptions);
+    await resend.emails.send({
+      from: "UC Website <info@urbancode.tech>",
+      to: process.env.MAIL_TO,
+      subject: `UC Website Lead: Contact Page Message for ${interest}`,
+      html: `
+        <h2>From UC Website: New Contact Page Message</h2>
+        <p><b>Name:</b> ${name}</p>
+        <p><b>Email:</b> ${email}</p>
+        <p><b>Mobile:</b> ${mobile}</p>
+        <p><b>Interest:</b> ${interest}</p>
+        <p><b>Message:</b> ${message}</p>
+      `,
+    });
+
     res.status(200).json({ message: "Email sent successfully!" });
   } catch (err) {
-    console.error("Email Error:", err);
+    console.error("Email send failed:", err);
     res.status(500).json({ error: "Failed to send email" });
   }
 });
 
-// === Course Enquiry Form ===
+// === Course enquiry form ===
 app.post("/api/send-email/course-enquiry", async (req, res) => {
   const { name, email, phone, pin, course, message, mode } = req.body;
 
@@ -106,31 +84,30 @@ app.post("/api/send-email/course-enquiry", async (req, res) => {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
-  const mailOptions = {
-    from: `"UC-Website Course Enquiry" <${process.env.MAIL_USER}>`,
-    to: process.env.MAIL_TO,
-    subject: `UC Website Lead: Course Enquiry for ${course}`,
-    html: `
-      <h2>From UC Website: New Course Enquiry</h2>
-      <p><b>Name:</b> ${name}</p>
-      <p><b>Email:</b> ${email}</p>
-      <p><b>Mobile:</b> ${phone}</p>
-      <p><b>Course:</b> ${course}</p>
-      <p><b>Message:</b> ${message}</p>
-      <p><b>Pin Code:</b> ${pin}</p>
-      <p><b>Mode:</b> ${mode}</p>
-    `,
-  };
-
   try {
-    await transporter.sendMail(mailOptions);
+    await resend.emails.send({
+      from: "UC Website <info@urbancode.tech>",
+      to: process.env.MAIL_TO,
+      subject: `UC Website Lead: Course Enquiry for ${course}`,
+      html: `
+        <h2>From UC Website: New Course Enquiry</h2>
+        <p><b>Name:</b> ${name}</p>
+        <p><b>Email:</b> ${email}</p>
+        <p><b>Mobile:</b> ${phone}</p>
+        <p><b>Course:</b> ${course}</p>
+        <p><b>Message:</b> ${message}</p>
+        <p><b>Pin Code:</b> ${pin}</p>
+        <p><b>Mode:</b> ${mode}</p>
+      `,
+    });
+
     res.status(200).json({ message: "Email sent successfully!" });
   } catch (err) {
-    console.error("Email Error:", err);
+    console.error("Email send failed:", err);
     res.status(500).json({ error: "Failed to send email" });
   }
 });
 
-// === Server Start ===
+// === Server start ===
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
