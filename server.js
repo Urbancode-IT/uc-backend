@@ -138,6 +138,36 @@ app.post("/api/send-email/course-enquiry", async (req, res) => {
     res.status(500).json({ error: "Failed to send email" });
   }
 });
+//======Project Enquiry====
+app.post("/api/send-email/project-enquiry", async (req, res) => {
+  const { name, email, phone,subject, message } = req.body;
+
+  if (!name || !email || !phone) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    await resend.emails.send({
+      from: "UC Website <info@urbancode.in>",
+      to: process.env.MAIL_TO,
+      subject: `UC Website Lead: Project Enquiry`,
+      html: `
+        <h2>From UC Website: New Project Enquiry</h2>
+        <p><b>Name:</b> ${name}</p>
+        <p><b>Email:</b> ${email}</p>
+        <p><b>Mobile:</b> ${phone}</p>
+        <p><b>Subject:</b> ${subject}</p>
+        <p><b>Message:</b> ${message}</p>
+      `,
+    });
+
+    res.status(200).json({ message: "Email sent successfully!" });
+  } catch (err) {
+    console.error("Email send failed:", err);
+    res.status(500).json({ error: "Failed to send email" });  
+  }
+});
+
 
 // === Server start ===
 const PORT = process.env.PORT || 5000;
