@@ -18,7 +18,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 app.post("/api/send-email/mentor", async (req, res) => {
   const { name, email, mobile, experience, interest } = req.body;
 
-  if (!firstName || !email || !mobile) {
+  if (!name || !email || !mobile) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
