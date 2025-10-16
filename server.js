@@ -24,7 +24,7 @@ app.post("/api/send-email/internship", async (req, res) => {
 
   try {
     await resend.emails.send({
-      from: "UC Website <info@urbancode.tech>", // can use your verified domain or temporary @resend.dev
+      from: "UC Website <onboarding@resend.dev>", // can use your verified domain or temporary @resend.dev
       to: process.env.MAIL_TO,
       subject: `UC Website Lead: Internship Application - ${program}`,
       html: `
@@ -56,7 +56,7 @@ app.post("/api/send-email/contact", async (req, res) => {
 
   try {
     await resend.emails.send({
-      from: "UC Website <info@urbancode.tech>",
+      from: "UC Website <onboarding@resend.dev>",
       to: process.env.MAIL_TO,
       subject: `UC Website Lead: Contact Page Message for ${interest}`,
       html: `
@@ -86,7 +86,7 @@ app.post("/api/send-email/course-enquiry", async (req, res) => {
 
   try {
     await resend.emails.send({
-      from: "UC Website <info@urbancode.tech>",
+      from: "UC Website <onboarding@resend.dev>",
       to: process.env.MAIL_TO,
       subject: `UC Website Lead: Course Enquiry for ${course}`,
       html: `
