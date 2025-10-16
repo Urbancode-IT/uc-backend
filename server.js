@@ -14,6 +14,37 @@ app.use(cors({
 // ✅ Initialize Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+//====== Mentor Form====
+app.post("/api/send-email/mentor", async (req, res) => {
+  const { name, email, mobile, experience, interest } = req.body;
+
+  if (!firstName || !email || !mobile) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    await resend.emails.send({
+      from: "UC Website <info@urbancode.in>", // can use your verified domain or temporary @resend.dev
+      to: process.env.MAIL_TO,
+      subject: `UC Website Lead: Mentor Application`,
+      html: `
+        <h2>From UC Website: New Mentor Application</h2>
+        <p><b>Name:</b> ${name}</p>
+        <p><b>Email:</b> ${email}</p>
+        <p><b>Mobile:</b> ${mobile}</p>
+        <p><b>Experience:</b> ${experience}</p>
+        <p><b>Interest:</b> ${interest}</p>
+
+      `,
+    });
+
+    res.status(200).json({ message: "Email sent successfully!" });
+  } catch (err) {
+    console.error("Email send failed:", err);
+    res.status(500).json({ error: "Failed to send email" });  
+  }
+});
+
 // === Internship form ===
 app.post("/api/send-email/internship", async (req, res) => {
   const { firstName, lastName, email, mobile, program, experience, interest, portfolio } = req.body;
