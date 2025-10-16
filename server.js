@@ -18,16 +18,11 @@ app.use(express.json());
 
 // ✅ Configure transporter once globally
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
+  service: "gmail",
   auth: {
     user: process.env.MAIL_USER, // should match the "from" address
     pass: process.env.MAIL_PASS,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
+  }
 });
 
 // ✅ Test transporter
