@@ -7,7 +7,7 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: ['https://www.urbancode.in','https://urbancode.in', 'http://localhost:3000'],
+  origin: ['https://www.urbancode.in', 'https://urbancode.in', 'http://localhost:3000'],
   methods: ['GET', 'POST'],
 }));
 
@@ -41,7 +41,7 @@ app.post("/api/send-email/mentor", async (req, res) => {
     res.status(200).json({ message: "Email sent successfully!" });
   } catch (err) {
     console.error("Email send failed:", err);
-    res.status(500).json({ error: "Failed to send email" });  
+    res.status(500).json({ error: "Failed to send email" });
   }
 });
 
@@ -115,7 +115,30 @@ app.post("/api/send-email/course-enquiry", async (req, res) => {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
+  // ✅ Forward to Zen External Enrollment API
+  const externalApiPayload = {
+    name: name,
+    mobile_number: phone,
+    email: email,
+    course: course,
+    source: "Website",
+    businessunit: "uc",
+    requirements: `${message || ""}${pin ? ` | Pin: ${pin}` : ""}${mode ? ` | Mode: ${mode}` : ""}`,
+    card_type: "Training Only"
+  };
+
   try {
+    // Attempt to send to Zen, but don't fail the whole request if it fails
+    fetch("http://localhost:3000/leads/external-enrollment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.ZEN_API_KEY || "MY_SUPER_SECRET_KEY"
+      },
+      body: JSON.stringify(externalApiPayload),
+    }).catch(err => console.error("External API forward failed:", err));
+
+    // ✅ Original Email Sending logic via Resend
     await resend.emails.send({
       from: "UC Website <info@urbancode.in>",
       to: process.env.MAIL_TO,
@@ -126,21 +149,21 @@ app.post("/api/send-email/course-enquiry", async (req, res) => {
         <p><b>Email:</b> ${email}</p>
         <p><b>Mobile:</b> ${phone}</p>
         <p><b>Course:</b> ${course}</p>
-        <p><b>Message:</b> ${message}</p>
+        <p><b>Message:</b> ${message || "N/A"}</p>
         <p><b>Pin Code:</b> ${pin}</p>
-        <p><b>Mode:</b> ${mode}</p>
+        <p><b>Mode:</b> ${mode || "N/A"}</p>
       `,
     });
 
-    res.status(200).json({ message: "Email sent successfully!" });
+    res.status(200).json({ message: "Enquiry submitted successfully and forwarded to CRM!" });
   } catch (err) {
-    console.error("Email send failed:", err);
-    res.status(500).json({ error: "Failed to send email" });
+    console.error("Enquiry processing failed:", err);
+    res.status(500).json({ error: "Failed to process enquiry" });
   }
 });
 //======Project Enquiry====
 app.post("/api/send-email/project-enquiry", async (req, res) => {
-  const { name, email, phone,subject, message } = req.body;
+  const { name, email, phone, subject, message } = req.body;
 
   if (!name || !email || !phone) {
     return res.status(400).json({ error: "Missing required fields" });
@@ -164,7 +187,7 @@ app.post("/api/send-email/project-enquiry", async (req, res) => {
     res.status(200).json({ message: "Email sent successfully!" });
   } catch (err) {
     console.error("Email send failed:", err);
-    res.status(500).json({ error: "Failed to send email" });  
+    res.status(500).json({ error: "Failed to send email" });
   }
 });
 
