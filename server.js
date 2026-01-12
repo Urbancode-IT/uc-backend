@@ -13,7 +13,9 @@ app.use(cors({
 
 // ✅ Initialize Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
-
+app.get("/", (req, res) => {
+  res.send("urbancode backend  is running");
+});
 //====== Mentor Form====
 app.post("/api/send-email/mentor", async (req, res) => {
   const { name, email, mobile, experience, interest } = req.body;
