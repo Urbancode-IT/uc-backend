@@ -131,7 +131,7 @@ app.post("/api/send-email/course-enquiry", async (req, res) => {
 
   try {
     // Attempt to send to Zen, but don't fail the whole request if it fails
-    fetch("http://localhost:3000/leads/external-enrollment", {
+    fetch("https://api.zen-urbancode.in/leads/external-enrollment", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
