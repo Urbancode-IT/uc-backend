@@ -11,6 +11,15 @@ app.use(cors({
   methods: ['GET', 'POST'],
 }));
 
+// ping route
+app.get("/ping", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    message: "Server is alive",
+    time: new Date().toISOString(),
+  });
+});
+
 // ✅ Initialize Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
 app.get("/", (req, res) => {
